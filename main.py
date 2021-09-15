@@ -1,8 +1,6 @@
 import cv2  # openCV python package
 import numpy as np  # numpy package
 
-print("Hello OpenCV")
-
 
 # Function designed for camera capture as image for processing
 # optional mirroring for future possible use
@@ -10,7 +8,8 @@ print("Hello OpenCV")
 
 def get_webcam(mirror: bool = False, webcamID: int = 0):
     # Use camera device with specified ID 0 for first connected device
-    cam = cv2.VideoCapture(webcamID)
+    # CAP_DSHOW added because of the windows based error
+    cam = cv2.VideoCapture(webcamID, cv2.CAP_DSHOW)
     while True:
         # isCameraWorking for camera debug
         # img is frame captured from video camera
@@ -26,7 +25,7 @@ def get_webcam(mirror: bool = False, webcamID: int = 0):
         # if ESC key pressed end video capture from webcam
         if cv2.waitKey(1) & 0xFF == 27:
             break
-    #destroy all video cam windows and free some memory space
+    # destroy all video cam windows and free some memory space
     cv2.destroyAllWindows()
 
 
