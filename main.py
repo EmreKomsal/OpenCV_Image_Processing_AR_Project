@@ -1,4 +1,4 @@
 import cv2  # openCV python package
+import numpy as np #numpy package
 
 print("Hello OpenCV")
-#This line is test for git push
