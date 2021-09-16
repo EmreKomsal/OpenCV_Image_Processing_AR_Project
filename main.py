@@ -2,9 +2,6 @@ import cv2  # openCV python package
 import numpy as np  # numpy package
 
 
-def OnSliderChange(value):
-    return value
-
 # Function designed for camera capture as image for processing
 # optional mirroring for future possible use
 # webcamID is computer or system with multiple webcams
@@ -42,6 +39,12 @@ def get_webcam(mirror: bool = False, webcamID: int = 0):
     cv2.destroyAllWindows()
 
 
+# Find most fitting method for video types
+def Image_Window_Optimizer(img_list):
+    # Find array length for appropriate fit
+    array_length = len(img_list)
+
+
 
 # Make image 3 channel Grayscale Image
 def GrayScale_Image_3_Channel(img):
@@ -54,7 +57,7 @@ def GrayScale_Image_3_Channel(img):
 
 # Make blurred and cannied versions of image
 # First Canny Paramaters for Max value, second value for Min value
-def Blur_and_Canny_Ege_Image(img, matrix_size: int, canny_parameters : (int,int)):
+def Blur_and_Canny_Ege_Image(img, matrix_size: int, canny_parameters: (int, int)):
     # Creating gray scale version of image for Gaussian Blur
     img_grayScale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     kernel_matrix = (matrix_size, matrix_size)
