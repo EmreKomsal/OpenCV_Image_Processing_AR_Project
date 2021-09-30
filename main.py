@@ -89,7 +89,7 @@ def Blur_and_Canny_Ege_Image(img, matrix_size: int, canny_parameters: (int, int)
     return img_blur, img_canny
 
 
-def getContours(img, img_original, areaSize=200):
+def getContours(img, img_original, areaSize=300):
     img_contour = img_original.copy()
     contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
