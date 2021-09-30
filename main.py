@@ -23,16 +23,15 @@ def get_webcam(mirror: bool = False, webcamID: int = 0):
         if mirror:
             img = cv2.flip(img, 1)
         # Creating gray scale version of image for test
-        img_grayScale = GrayScale_Image_3_Channel(img)
+        img_grayScale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # Create Canny and Blur Filters
         img_blur, img_canny = Blur_and_Canny_Ege_Image(img, 7, (minValue, maxValue))
+        img_contour = getContours(img_canny, img)
         # Stacking images in one window
-        img_list = [[img, img_grayScale], [img_blur, img_canny]]
+        img_list = [[img, img_grayScale], [img_blur, img_canny], [img_contour, img_contour]]
         img_stack = stackImages(0.5, img_list)
-        # img_stack2 = np.hstack((img_blur, img_canny))
         # show video cam stream as a frame by frame image
         cv2.imshow("Webcam", img_stack)
-        # cv2.imshow("Webcam_Processed", img_stack2)
         # if ESC key pressed end video capture from webcam
         if cv2.waitKey(1) & 0xFF == 27:
             break
@@ -42,9 +41,13 @@ def get_webcam(mirror: bool = False, webcamID: int = 0):
 
 # Find most fitting method for video types
 def stackImages(scale,imgArray):
+    # get row length
     rows = len(imgArray)
+    # get column length from 2D imgArray
     cols = len(imgArray[0])
+    # check if rows is array
     rowsAvailable = isinstance(imgArray[0], list)
+    # use camera feed as a image size
     width = imgArray[0][0].shape[1]
     height = imgArray[0][0].shape[0]
     if rowsAvailable:
@@ -73,16 +76,6 @@ def stackImages(scale,imgArray):
     return ver
 
 
-
-# Make image 3 channel Grayscale Image
-def GrayScale_Image_3_Channel(img):
-    # Creating gray scale version of image
-    img_grayScale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Making 2 channel image back to 3 channel image
-    img_grayScale_3_Channel = cv2.cvtColor(img_grayScale, cv2.COLOR_GRAY2BGR)
-    return img_grayScale_3_Channel
-
-
 # Make blurred and cannied versions of image
 # First Canny Parameters for Max value, second value for Min value
 def Blur_and_Canny_Ege_Image(img, matrix_size: int, canny_parameters: (int, int)):
@@ -94,6 +87,21 @@ def Blur_and_Canny_Ege_Image(img, matrix_size: int, canny_parameters: (int, int)
     # Finding Canny Edges of image
     img_canny = cv2.Canny(img_blur, canny_parameters[0], canny_parameters[1])
     return img_blur, img_canny
+
+
+def getContours(img, img_original, areaSize=200):
+    img_contour = img_original.copy()
+    contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if area > areaSize:
+            cv2.drawContours(img_contour, cnt, -1, (255, 0, 0), 3)
+            cornerLength = cv2.arcLength(cnt, True)
+            approx_shape = cv2.approxPolyDP(cnt, 0.02 * cornerLength, True)
+            origin_x, origin_y, shape_width, shape_height = cv2.boundingRect(approx_shape)
+            cv2.rectangle(img_contour, (origin_x, origin_y), (origin_x+shape_width, origin_y+shape_height),
+                          (255, 0, 255), 2)
+    return img_contour
 
 
 def main():
